@@ -1,1 +1,3 @@
 I accidentally init the git those two separate folder for that when I init into the parent folder then it show error, for that reason ".git" folder required to delete and my all commits lost :( for that reason I commit all at once commit.
+
+And I try my best to make this site as good as possible. 
