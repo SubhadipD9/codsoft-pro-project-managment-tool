@@ -1,0 +1,133 @@
+:root {
+  --primary-color: #6a11cb;
+  --primary-color-dark: #2575fc;
+  --text-color: #333;
+  --bg-color: #f9f9f9;
+  --border-radius: 8px;
+  --font-family: 'Montserrat', sans-serif;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-color);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 2rem;
+  min-height: 100vh;
+}
+
+.create-container {
+  background-color: #fff;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 600px;
+}
+
+h1 {
+  margin-bottom: 1.5rem;
+  color: var(--text-color);
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+.project-form .form-group {
+  margin-bottom: 1.25rem;
+}
+
+.project-form label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.project-form input,
+.project-form textarea {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-family: var(--font-family);
+  resize: vertical;
+}
+
+.project-form button {
+  background: linear-gradient(to right, var(--primary-color), var(--primary-color-dark));
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  transition: background 0.3s ease;
+}
+
+.project-form button:hover {
+  background: linear-gradient(to right, var(--primary-color-dark), var(--primary-color));
+}
+
+.edit-actions {
+  margin-top: 1rem;
+  display: none;
+  text-align: center;
+}
+
+.edit-actions button {
+  margin-top: 10px;
+  background-color: #ff4c4c;
+  color: #fff;
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
+}
+
+.edit-actions .btn-edit {
+  background-color: #ffbc00;
+}
+
+.edit-actions .btn-task {
+  background-color: #2575fc;
+}
+
+.edit-actions button:hover {
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+  .create-container {
+    padding: 1.5rem;
+    width: 90%;
+  }
+
+  .project-form .form-group {
+    margin-bottom: 1rem;
+  }
+
+  .project-form input,
+  .project-form textarea {
+    padding: 0.5rem;
+  }
+
+  .project-form button {
+    padding: 0.5rem 1rem;
+  }
+
+  .edit-actions button {
+    padding: 8px 12px;
+  }
+}

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="main.css" />
+    <title>Edit Blog</title>
+    <style>
+        /* Reusing global styles where possible */
+        .edit-form {
+            max-width: 800px;
+            margin: 40px auto;
+            background: var(--bg-color);
+            /* Use global background color */
+            padding: 24px;
+            border-radius: var(--border-radius);
+            /* Use global border-radius */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            /* Match header shadow for consistency */
+            font-family: var(--font-family);
+            /* Use global font family */
+        }
+
+        .edit-form h2 {
+            font-size: 2rem;
+            /* Adjusted for better hierarchy, close to h1 but smaller */
+            line-height: 1.2;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 1.5em;
+            /* Increased spacing */
+            text-align: center;
+            /* Center the heading */
+        }
+
+        .edit-form input,
+        .edit-form textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border: 1px solid #ccc;
+            /* This could be a variable too if you define it */
+            border-radius: var(--border-radius);
+            /* Use global border-radius */
+            font-size: 1rem;
+            /* Use relative unit for consistency */
+            color: var(--text-color);
+            /* Match text color */
+        }
+
+        .edit-form textarea {
+            resize: vertical;
+            /* Allow vertical resizing */
+        }
+
+        /* Applying existing button styles */
+        .edit-form .btn-submit {
+            /* Using a new class for the form button */
+            width: 100%;
+            /* Make the button full width */
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            /* Use primary color */
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            /* Use global border-radius */
+            font-size: 1rem;
+            /* Use relative unit for consistency */
+            font-weight: 600;
+            /* Match existing button font-weight */
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+            /* Add transitions */
+        }
+
+        .edit-form .btn-submit:hover {
+            background-color: var(--primary-color-dark);
+            /* Use primary-color-dark for hover */
+            transform: translateY(-2px);
+            /* Add subtle lift effect */
+            box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+            /* Match cta button shadow */
+        }
+
+        .show-error {
+            color: var(--btn-danger-color, #d9534f);
+            /* Use a variable if defined, else fallback */
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar container">
+            <div class="logo">Prio</div>
+            <nav class="nav-links">
+                <a href="../main/main.html" class="nav-link-btn">Home</a>
+                <a href="../create/create.html" class="nav-link-btn">Create</a>
+                <div class="user-dropdown">
+                    <span id="user-greeting" class="username-display" style="display: none;">
+                        Hello, <span class="username"></span>!
+                    </span>
+                    <div class="dropdown-menu">
+                        <button class="btn btn-danger logout-btn" id="logout-btn">Logout</button>
+                    </div>
+                </div>
+            </nav>
+            <button class="hamburger" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        <form class="edit-form" id="editForm">
+            <h2>Edit project</h2>
+            <input type="text" id="title" placeholder="Blog Title" required />
+            <textarea id="content" placeholder="Blog Content" rows="10" required></textarea>
+            <button type="submit" class="btn-submit">Save Changes</button>
+        </form>
+        <p class="show-error"></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="../config.js"></script>
+    <script>
+        const API_URL = CONFIG.API_URL;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const slug = urlParams.get("slug");
+        const token = localStorage.getItem("token");
+
+        const titleInput = document.getElementById("title");
+        const contentInput = document.getElementById("content");
+        const errorDisplay = document.querySelector(".show-error");
+        const userGreetingSpan = document.getElementById('user-greeting');
+        const usernameSpan = userGreetingSpan.querySelector('.username');
+        const logoutButton = document.getElementById('logout-btn');
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        let postId = null;
+
+        function checkLoginStatus() {
+            const storedUsername = localStorage.getItem('username');
+            if (token && storedUsername) {
+                userGreetingSpan.style.display = 'inline-block';
+                usernameSpan.textContent = storedUsername;
+            } else {
+                userGreetingSpan.style.display = 'none';
+            }
+        }
+
+        checkLoginStatus();
+
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = '../login/login.html';
+        });
+
+
+        if (!slug || !token) {
+            errorDisplay.textContent = "Missing blog slug or authentication.";
+        } else {
+            axios.get(`${API_URL}/api/project/view-for-edit/${slug}`, {
+                headers: {
+                    authorization: token
+                }
+            }).then(response => {
+                const post = response.data.post;
+                postId = post._id;
+                titleInput.value = post.title;
+                contentInput.value = post.description;
+            }).catch(err => {
+                console.error(err);
+                errorDisplay.textContent = "Error fetching project post.";
+            });
+        }
+
+        document.getElementById("editForm").addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            if (!postId) {
+                errorDisplay.textContent = "Post ID not loaded. Try refreshing the page.";
+                return;
+            }
+
+            try {
+                const response = await axios.put(
+                    `${API_URL}/api/project/edit-project/${postId}`, {
+                    title: titleInput.value,
+                    description: contentInput.value
+                }, {
+                    headers: {
+                        authorization: token
+                    }
+                }
+                );
+
+                if (response.status === 200) {
+                    alert("Post updated successfully!");
+                    window.location.href = `../main/main.html`; // Redirect to main.html after successful edit
+                } else {
+                    errorDisplay.textContent = "Failed to update post.";
+                }
+            } catch (err) {
+                console.error(err);
+                errorDisplay.textContent = "An error occurred while updating.";
+            }
+        });
+        hamburger.addEventListener('click', () => {
+            const isExpanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
+            hamburger.setAttribute('aria-expanded', !isExpanded);
+            navLinks.classList.toggle('active');
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.1/dist/purify.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <title>Prio - Modern Project Management</title>
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar container">
+            <a href="#" class="logo">Prio</a>
+            <nav class="nav-links">
+                <a href="./login/login.html" class="nav-signin">Sign in</a>
+                <a href="./signup/signup.html" class="cta nav-cta">Get started</a>
+            </nav>
+            <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero container">
+            <div class="hero-content">
+                <h1>Manage Projects Smarter, Not Harder with Prio</h1>
+                <p>Streamline your workflow, collaborate seamlessly, and achieve your project goals faster than ever
+                    before. Prio makes project management intuitive and effective.</p>
+                <a href="./signup/signup.html" class="cta hero-cta">Get Started for Free</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; Created by Subhadip</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+
+        hamburger.addEventListener('click', () => {
+            const isExpanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
+            hamburger.setAttribute('aria-expanded', !isExpanded);
+            navLinks.classList.toggle('active');
+        });
+
+        const token = localStorage.getItem("token");
+
+        if (!token || isTokenExpired(token)) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+        }
+
+
+        function isTokenExpired(token) {
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payloadBase64));
+                const exp = decodedPayload.exp;
+
+                if (!exp) return true;
+
+                const now = Math.floor(Date.now() / 1000);
+                return exp < now;
+            } catch (err) {
+                console.error("Failed to decode token", err);
+                return true;
+            }
+        }
+
+        if (!(isTokenExpired(token))) {
+            window.location.href = `./main/main.html`
+        }
+    </script>
+
+</body>
+
+</html>

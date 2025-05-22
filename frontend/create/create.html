@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create / Edit Project</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="create.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+</head>
+
+<body>
+    <div class="create-container">
+        <h1 id="page-title">Create a New Project</h1>
+        <form class="project-form">
+            <div class="form-group">
+                <label for="title">Project Title</label>
+                <input type="text" id="title" name="title" placeholder="Enter project title" required />
+            </div>
+
+            <div class="form-group">
+                <label for="description">Project Description</label>
+                <textarea id="description" name="description" rows="5" placeholder="Describe your project..."
+                    required></textarea>
+            </div>
+
+            <button type="submit">Save Project</button>
+        </form>
+    </div>
+
+    <script src="../config.js"></script>
+    <script src="create.js"></script>
+
+    <script>
+
+        const token = localStorage.getItem("token");
+
+        if (!token || isTokenExpired(token)) {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+        }
+
+
+        function isTokenExpired(token) {
+            try {
+                const payloadBase64 = token.split('.')[1];
+                const decodedPayload = JSON.parse(atob(payloadBase64));
+                const exp = decodedPayload.exp;
+
+                if (!exp) return true;
+
+                const now = Math.floor(Date.now() / 1000);
+                return exp < now;
+            } catch (err) {
+                console.error("Failed to decode token", err);
+                return true;
+            }
+        }
+
+        if (!(isTokenExpired(token))) {
+            window.location.href = `create.html`
+        }
+    </script>
+</body>
+
+</html>

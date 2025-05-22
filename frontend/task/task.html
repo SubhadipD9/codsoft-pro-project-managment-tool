@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="task.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <title>Project Tasks</title>
+</head>
+
+<body>
+
+    <header>
+        <div class="navbar container">
+            <a href="../main/main.html" class="logo">Prio</a>
+
+            <nav class="nav-links">
+                <a href="../create/create.html" class="cta">Create Project</a>
+
+                <div class="user-dropdown">
+                    <span class="username-display">
+                        Welcome, <span class="username">Guest</span> 👋
+                    </span>
+                    <div class="dropdown-menu">
+                        <button class="cta logout-btn">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="task-container">
+                <div class="project-details">
+                    <h1 id="project-title"></h1>
+                    <p class="project-description"></p>
+                </div>
+
+                <div class="task-list">
+                    <h2>Tasks</h2>
+                    <!-- <div class="task">
+                        <h3>Task 1: Design Mockups</h3>
+                        <p class="task-description">Create initial wireframes and high-fidelity mockups for the project.
+                        </p>
+                    </div>
+                    <div class="task">
+                        <h3>Task 2: Develop Frontend</h3>
+                        <p class="task-description">Implement the user interface using HTML, CSS, and JavaScript.</p>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../config.js"></script>
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        const userGreetingSpan = document.querySelector('.username-display');
+        const usernameSpan = userGreetingSpan.querySelector('.username');
+        const logoutButton = document.querySelector('.logout-btn');
+
+        const listTask = document.querySelector(".task-list");
+        const projectDetails = document.querySelector(".task-container");
+        const projectTitle = document.getElementById("project-title");
+        const projectDes = document.querySelector(".project-description");
+
+        const API_URL = CONFIG.API_URL;
+
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            window.location.href = `../login/login.html`;
+        }
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const projectId = urlParams.get("id");
+
+        if (!projectId || projectId === "null") {
+            alert("Invalid or missing project ID. Redirecting...");
+            window.location.href = "../main/main.html";
+        }
+
+        async function showTask() {
+            try {
+                const response = await axios.get(`${API_URL}/api/task/${projectId}`, {
+                    headers: { authorization: token }
+                });
+                const data = response.data.tasks;
+                let count = 1;
+
+                data.forEach((data) => {
+                    const newDiv = document.createElement("div");
+                    newDiv.classList.add("task");
+
+                    const newH3 = document.createElement("h3");
+
+                    const statusDot = document.createElement("span");
+                    statusDot.style.display = "inline-block";
+                    statusDot.style.width = "10px";
+                    statusDot.style.height = "10px";
+                    statusDot.style.borderRadius = "50%";
+                    statusDot.style.marginRight = "8px";
+                    statusDot.style.verticalAlign = "middle";
+                    if (data.status === "pending") statusDot.style.backgroundColor = "#f1c40f";
+                    else if (data.status === "in-progress") statusDot.style.backgroundColor = "#3498db";
+                    else if (data.status === "completed") statusDot.style.backgroundColor = "#2ecc71";
+                    else statusDot.style.backgroundColor = "#bdc3c7";
+
+                    newH3.appendChild(statusDot);
+                    newH3.append(`Task ${count}: ${data.title}`);
+                    count += 1;
+
+                    const newP = document.createElement("p");
+                    newP.classList.add("task-description");
+                    newP.innerHTML = `Assign To: ${data.assignedTo}`;
+
+                    const dueDate = document.createElement("p");
+                    const rawDate = data.dueDate;
+                    const date = new Date(rawDate);
+                    const formattedDate = date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    dueDate.innerHTML = `Before: ${formattedDate}`;
+
+                    const statusGroup = document.createElement("div");
+                    statusGroup.classList.add("form-group");
+
+                    const statusLabel = document.createElement("label");
+                    statusLabel.setAttribute("for", `task-status-${data._id}`);
+                    statusLabel.innerText = "Status:";
+
+                    const statusSelect = document.createElement("select");
+                    statusSelect.id = `task-status-${data._id}`;
+                    statusSelect.name = "task-status";
+                    statusSelect.required = true;
+
+                    const statusOptions = ["", "pending", "in-progress", "completed"];
+                    const optionLabels = ["Select Status", "Pending", "In Progress", "Completed"];
+                    statusOptions.forEach((val, i) => {
+                        const option = document.createElement("option");
+                        option.value = val;
+                        option.text = optionLabels[i];
+                        if (val === data.status) option.selected = true;
+                        statusSelect.appendChild(option);
+                    });
+
+                    const updateButton = document.createElement("button");
+                    updateButton.classList.add("cta");
+                    updateButton.innerText = "Update";
+                    updateButton.style.marginLeft = "10px";
+                    updateButton.style.marginTop = "10px";
+                    updateButton.onclick = async () => {
+                        const newStatus = statusSelect.value;
+                        const taskId = data._id;
+
+                        try {
+                            const response = await axios.patch(`${API_URL}/api/task/update-task/${taskId}`, {
+                                status: newStatus,
+                            }, {
+                                headers: { authorization: token }
+                            });
+
+                            const { data, status } = response;
+
+                            if (status === 200) {
+                                alert("Task status successfully updated")
+                                if (newStatus === "pending") statusDot.style.backgroundColor = "#f1c40f";
+                                else if (newStatus === "in-progress") statusDot.style.backgroundColor = "#3498db";
+                                else if (newStatus === "completed") statusDot.style.backgroundColor = "#2ecc71";
+                                else statusDot.style.backgroundColor = "#bdc3c7";
+                            }
+                        } catch (err) {
+
+                        }
+                    };
+
+                    const deleteButton = document.createElement("button");
+                    deleteButton.classList.add("cta");
+                    deleteButton.innerText = "Delete";
+                    deleteButton.style.marginLeft = "10px";
+                    deleteButton.style.marginTop = "10px";
+                    deleteButton.onclick = async () => {
+                        const taskId = data._id;
+                        try {
+
+                            const response = await axios.delete(`${API_URL}/api/task/delete-task/${taskId}`, {
+                                headers: { authorization: token }
+                            });
+
+                            const { data, status } = response;
+
+                            if (status === 200) {
+                                alert("The task successfully deleted");
+
+                                newDiv.style.transition = "opacity 0.3s ease, transform 0.3s ease";
+                                newDiv.style.opacity = "0";
+                                newDiv.style.transform = "translateY(-10px)";
+                                setTimeout(() => {
+                                    newDiv.remove();
+                                }, 300);
+                            }
+
+                        } catch (err) {
+                            console.error("Delete failed", err);
+                            alert("Something went wrong deleting the task.");
+                        }
+                    }
+
+                    statusGroup.appendChild(statusLabel);
+                    statusGroup.appendChild(statusSelect);
+                    statusGroup.appendChild(updateButton);
+                    statusGroup.appendChild(deleteButton);
+
+                    newDiv.appendChild(newH3);
+                    newDiv.appendChild(newP);
+                    newDiv.appendChild(dueDate);
+                    newDiv.appendChild(statusGroup);
+
+                    listTask.appendChild(newDiv);
+                });
+            } catch (err) {
+                console.error(err);
+                if (err.response && err.response.status === 401) {
+                    alert("Session expired. Please log in again.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    window.location.href = "../login/login.html";
+                } else {
+                    alert("An error occurred while fetching data.");
+                }
+            }
+        }
+
+
+        async function showProject() {
+            try {
+                const response = await axios.get(`${API_URL}/api/project/only-view/${projectId}`, {
+                    headers: { authorization: token }
+                })
+
+                const data = response.data.response;
+
+                projectTitle.innerText = data.title;
+                projectDes.innerHTML = data.description;
+            } catch (err) {
+                console.error(err);
+                if (err.response && err.response.status === 401) {
+                    alert("Session expired. Please log in again.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("username");
+                    window.location.href = "../login/login.html";
+                } else {
+                    alert("An error occurred while fetching data.");
+                }
+            }
+        }
+
+
+        hamburger.addEventListener('click', () => {
+            const isExpanded = hamburger.getAttribute('aria-expanded') === 'true' || false;
+            hamburger.setAttribute('aria-expanded', !isExpanded);
+            navLinks.classList.toggle('active');
+        });
+
+        function updateUserName(name) {
+            if (name) {
+                usernameSpan.textContent = name;
+                userGreetingSpan.style.display = 'inline-block';
+            } else {
+                usernameSpan.textContent = 'Guest';
+            }
+        }
+
+        logoutButton.addEventListener('click', () => {
+            alert('Logging out...');
+            updateUserName("Guest");
+            window.location.href = '../login/login.html';
+        });
+
+        const savedUsername = localStorage.getItem('username');
+        if (savedUsername) {
+            updateUserName(savedUsername);
+        } else {
+            updateUserName("Guest");
+        }
+
+        showProject();
+        showTask();
+
+    </script>
+
+
+</body>
+
+</html>

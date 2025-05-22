@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="main.css" />
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.1/dist/purify.min.js"></script>
+
+
+    <title>Home</title>
+</head>
+
+<body>
+    <header>
+        <div class="navbar container">
+            <a href="main.html" class="logo">Prio</a>
+
+            <nav class="nav-links">
+                <a href="../create/create.html" class="nav-cta cta">Create Project</a>
+                <div class="user-dropdown">
+                    <span class="username-display">
+                        Welcome, <span class="username">Guest</span> 👋
+                    </span>
+                    <div class="dropdown-menu">
+                        <button class="cta logout-btn">Logout</button>
+                    </div>
+                </div>
+            </nav>
+
+            <button class="hamburger" aria-label="Toggle menu" aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="project-list"></div>
+        <p class="show-error"></p>
+    </main>
+
+    <script src="../config.js"></script>
+
+    <script>
+        const hamburger = document.querySelector('.hamburger');
+        const navLinks = document.querySelector('.nav-links');
+        hamburger.addEventListener('click', () => {
+            const isExpanded = hamburger.getAttribute('aria-expanded') === 'true';
+            hamburger.setAttribute('aria-expanded', !isExpanded);
+            navLinks.classList.toggle('active');
+        });
+
+        const username = localStorage.getItem("username");
+        if (username) {
+            document.querySelector('.username').textContent = username;
+        } else {
+            window.location.href = '../login/login.html';
+        }
+
+        document.querySelector('.logout-btn').addEventListener('click', () => {
+            localStorage.removeItem("token");
+            localStorage.removeItem("username");
+            window.location.href = '../login/login.html';
+        });
+    </script>
+
+    <script src="main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,231 @@
+/* Reset and Basic Styles */
+:root {
+    --primary-color: #6a11cb; /* A modern purple */
+    --primary-color-dark: #2575fc; /* A complementary blue */
+    --text-color: #333;
+    --text-color-light: #555;
+    --bg-color: #ffffff;
+    --border-radius: 8px;
+    --container-width: 1140px;
+    --font-family: 'Montserrat', sans-serif;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    color: var(--text-color);
+    background-color: var(--bg-color);
+    line-height: 1.6;
+    font-size: 16px; /* Base font size */
+    display: flex; /* For sticky footer */
+    flex-direction: column; /* For sticky footer */
+    min-height: 100vh; /* For sticky footer */
+}
+
+main {
+    flex: 1; /* For sticky footer */
+}
+
+h1 {
+    font-size: 2.8rem; /* Responsive font size */
+    line-height: 1.2;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 0.75em;
+}
+
+p {
+    margin-bottom: 1em;
+    color: var(--text-color-light);
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color-dark);
+}
+
+.container {
+    width: 90%;
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* Header & Navigation */
+header {
+    background-color: var(--bg-color);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    width: 100%;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-color-dark));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-emphasis-color: transparent;
+}
+
+.nav-links a {
+    margin-left: 25px;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.nav-links a:hover, .nav-links a.active { /* .active can be used for current page indication if needed */
+    color: var(--primary-color);
+}
+
+.nav-links .nav-signin {
+    margin-right: 10px;
+}
+
+.cta {
+    background: linear-gradient(45deg, var(--primary-color), var(--primary-color-dark));
+    color: #fff !important;
+    padding: 10px 22px;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+    border: none;
+    cursor: pointer;
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(106, 17, 203, 0.4);
+    color: #fff !important; /* Ensure text color stays white */
+}
+
+.nav-cta {
+    padding: 8px 18px; /* Slightly smaller for nav */
+}
+
+.hamburger {
+    display: none; /* Hidden on desktop */
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 10px;
+    z-index: 1001; /* Ensure it's above nav links on mobile */
+}
+
+.hamburger span {
+    display: block;
+    width: 25px;
+    height: 3px;
+    background-color: var(--text-color);
+    margin: 5px 0;
+    transition: all 0.3s ease-in-out;
+}
+
+/* Hero Section (Text Only) */
+.hero {
+    padding: 4rem 0; /* Adjust padding as needed */
+    text-align: center; /* Center the text content */
+}
+
+.hero-content {
+    max-width: 650px; /* Adjust max-width for centered text */
+    margin: 0 auto; /* Center the content block */
+}
+
+.hero-content h1 {
+    margin-bottom: 0.5em;
+}
+
+.hero-content p {
+    font-size: 1.1rem;
+    margin-bottom: 1.5em;
+}
+
+.hero-cta {
+    display: inline-block;
+    padding: 15px 35px;
+    font-size: 1.1rem;
+    margin-bottom: 0.5em;
+}
+
+footer {
+    background-color: #f8f9fa; /* Lighter footer for a simpler look */
+    color: var(--text-color-light);
+    padding: 1.5rem 0;
+    margin-top: auto; /* Pushes footer to bottom if content is short */
+}
+
+.footer-bottom {
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* Responsive Design for Navbar */
+@media (max-width: 768px) {
+    h1 { font-size: 2.2rem; }
+
+    .nav-links {
+        display: none; /* Hidden by default on mobile */
+        flex-direction: column;
+        position: absolute;
+        top: 70px; /* Adjust based on header height */
+        left: 0;
+        width: 100%;
+        background-color: var(--bg-color);
+        box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem 0;
+    }
+
+    .nav-links.active {
+        display: flex; /* Shown when hamburger is clicked */
+    }
+
+    .nav-links a {
+        margin: 10px 20px;
+        text-align: center;
+        padding: 10px;
+    }
+    .nav-links .nav-cta {
+        margin: 15px auto; /* Center CTA button */
+        display: block;
+        width: fit-content;
+    }
+
+    .hamburger {
+        display: block;
+    }
+    /* Hamburger Active State (Cross icon) */
+    .hamburger[aria-expanded="true"] span:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+    .hamburger[aria-expanded="true"] span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger[aria-expanded="true"] span:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .hero {
+        padding: 3rem 15px; /* Adjust padding for mobile */
+    }
+}
