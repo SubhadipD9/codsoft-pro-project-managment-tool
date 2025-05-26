@@ -5,6 +5,7 @@ import { connectDB } from "./config/db.js";
 import userRouter from "./routes/users.route.js";
 import projectRouter from "./routes/project.route.js";
 import taskRouter from "./routes/task.route.js";
+import rateLimiter from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use(
   })
 );
 app.use(express.json());
+app.use(rateLimiter);
 
 app.use("/api/user", userRouter);
 
